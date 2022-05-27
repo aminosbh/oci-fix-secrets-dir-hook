@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ "$UID" != '0' ]; then
+    echo "Please execute this script as root"
+    exit 1
+fi
+
+rm /etc/containers/oci/hooks.d/oci-fix-secrets-dir-hook.json
+rm /usr/libexec/oci/hooks.d/oci-fix-secrets-dir-hook
+

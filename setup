@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ "$UID" != '0' ]; then
+    echo "Please execute this script as root"
+    exit 1
+fi
+
+mkdir -p /usr/libexec/oci/hooks.d/
+cp oci-fix-secrets-dir-hook /usr/libexec/oci/hooks.d/
+
+mkdir -p /etc/containers/oci/hooks.d/
+cp oci-fix-secrets-dir-hook.json /etc/containers/oci/hooks.d/
+
+cat <<EOF
+
+  Add the 'hooks_dir' option to '/etc/containers/containers.conf' as follows:
+
+    [engine]
+    hooks_dir=["/etc/containers/oci/hooks.d"]
+
+  See 'man containers.conf' for more details.
+
+
+  IMPORTANT NOTE:
+    Be careful if /etc/containers/oci/hooks.d dir already exists and contains
+    other hooks. They will be automatically considered for all containers. In
+    such a case please consider not adding hooks_dir option globally and use
+    instead the --hook-dir option with 'podman run' whenever needed. You can
+    also choose to setup this hook manually in a different directory and still
+    configure it globally.
+
+    Please see https://github.com/containers/podman/blob/main/pkg/hooks/docs/oci-hooks.5.md
+    for further details about OCI hooks and Podman.
+
+EOF
